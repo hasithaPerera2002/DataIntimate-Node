@@ -1,5 +1,4 @@
 import User from "../models/user.js";
-import asyncErrorHandler from "../handlers/asyncErrorHandler.js";
 import CustomErrorHandler from "../handlers/customErrorHandler.js";
 import bcrypt from "bcrypt";
 import Jwt from "jsonwebtoken";
@@ -13,71 +12,89 @@ import {
 } from "../repo/userRepo.js";
 
 // Get all users
-const getAllUser = asyncErrorHandler(async (req, res, next) => {
+const getAllUser = async (req, res, next) => {
   const users = await getAllUsersRepo();
-  res.json(users);
-});
+  res.send(users);
+};
 
 // Get one user
-const getOneUser = asyncErrorHandler(async (req, res, next) => {
-  const user = getOneUserRepo(req.params.id);
+const getOneUser = async (req, res, next) => {
+  let user = await getOneUserRepo(req.params.id);
+
   if (!user) {
-    return next(
+    res.json(
       new CustomErrorHandler(`User not found with id of ${req.params.id}`, 404)
     );
   }
   res.json(user);
-});
+};
 
 // Create a new user
-const addUser = asyncErrorHandler(async (req, res, next) => {
-  console.log("addUser");
+const addUser = async (req, res, next) => {
+  if (!req.body.name || !req.body.email || !req.body.password) {
+    res.json(new CustomErrorHandler("Please provide all the fields", 400));
+    return;
+  }
+
   bcrypt.hash(req.body.password, 10, async (err, hash) => {
     if (err) {
-      return next(new CustomErrorHandler("Password could not be hashed", 500));
+      res.json(new CustomErrorHandler("Password could not be hashed", 500));
+      return;
     }
     const user = createUserRepo(new User(req.body.name, req.body.email, hash));
     res.status(201).json(user);
   });
-});
+};
 
 // Update a user
-const updateUser = asyncErrorHandler(async (req, res, next) => {
-  let userResult = getOneUserRepo(req.params.id);
+const updateUser = async (req, res, next) => {
+  let id = req.params.id;
+  let userResult = await getOneUserRepo(id);
 
   if (!userResult) {
-    return next(
-      new CustomErrorHandler(`User not found with id of ${req.params.id}`, 404)
-    );
+    res
+      .status(404)
+      .json(
+        new CustomErrorHandler(
+          `User not found with id of ${req.params.id}`,
+          404
+        )
+      );
+    return;
   }
-  await updateUserRepo(
-    new User(req.body.name, req.body.email, req.body.password)
-  ).then((result) => {
-    res.status(200).json(result);
-  });
-});
+
+  try {
+    const user = await updateUserRepo(
+      new User(req.body.name, req.body.email, req.body.password),
+      id
+    );
+    res.status(200).json(user);
+  } catch (error) {
+    next(error); // Pass the error to the error handler middleware
+  }
+};
 
 // Delete a user
-const deleteUser = asyncErrorHandler(async (req, res, next) => {
+const deleteUser = async (req, res, next) => {
   await deleteUserRepo(req.params.id).then((result) => {
     res.status(200).json(result);
   });
-});
+};
 
 // Login a user
-const login = asyncErrorHandler(async (req, res, next) => {
+const login = async (req, res, next) => {
   var email = req.body.email;
   var password = req.body.password;
   const user = await getOneUserRepoByEmail(email).then((user) => {
     if (!user) {
-      return next(new CustomErrorHandler("User not found", 404));
+      res.json(new CustomErrorHandler("User not found", 404));
+      return;
     }
     // Compare the password with the hashed password
     bcrypt.compare(password, user.password, (err, result) => {
       if (err) {
-        return next(
-          new CustomErrorHandler("Password could not be compared", 500)
-        );
+        res.json(new CustomErrorHandler("Password could not be compared", 500));
+        return;
       }
       if (result) {
         let token = Jwt.sign({ username: user.email }, process.env.SECRET_KEY, {
@@ -87,10 +104,10 @@ const login = asyncErrorHandler(async (req, res, next) => {
         res.setHeader("Authorization", token);
         res.status(200).json({ message: "Login successful" });
       } else {
-        return next(new CustomErrorHandler("Password is incorrect", 401));
+        res.json(new CustomErrorHandler("Password is incorrect", 401));
       }
     });
   });
-});
+};
 
 export { getAllUser, getOneUser, addUser, updateUser, deleteUser, login };

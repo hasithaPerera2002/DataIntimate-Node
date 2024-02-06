@@ -11,13 +11,10 @@ import {
 } from "../controllers/userController.js";
 
 userRouter.route("/").get(getAllUser).post(addUser);
+userRouter.route("/login").post(login);
 userRouter
   .route("/:id")
   .get(getOneUser)
   .put(verifyToken, updateUser) //`verifyToken` is a middleware that checks if the user is authorized
   .delete(deleteUser);
-userRouter.route("/login").post(login);
-userRouter.route("/test").get((req, res) => {
-  res.send("Test route reached successfully!");
-});
 export default userRouter;

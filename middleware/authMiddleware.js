@@ -6,15 +6,16 @@ function verifyToken(req, res, next) {
   if (authHeader) {
     var token = authHeader.split(" ")[1];
     // Verify the token
-    jsonToken.verify(token, process.env.JWT_SECRET, (err, user) => {
+    jsonToken.verify(token, process.env.SECRET_KEY, (err, user) => {
       if (err) {
-        return next(new CustomErrorHandler("Invalid or expired token", 401));
+        res.json(new CustomErrorHandler("Invalid or expired token", 401));
+        return;
       }
       next();
     });
-    next();
   } else {
-    return next(new CustomErrorHandler("You are not authorized", 401));
+    res.json(new CustomErrorHandler("You are not authorized", 401));
+    return;
   }
 }
 
