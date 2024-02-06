@@ -1,3 +1,5 @@
+import env from "dotenv";
+env.config();
 // Connect to SQL database
 import mysql from "mysql2";
 const db = mysql.createConnection({

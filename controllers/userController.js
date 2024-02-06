@@ -1,7 +1,7 @@
-import User from "../models/user";
-import asyncErrorHandler from "../handlers/asyncErrorHandler";
-import CustomErrorHandler from "../handlers/customErrorHandler";
-import bcrypt from "bcryptjs";
+import User from "../models/user.js";
+import asyncErrorHandler from "../handlers/asyncErrorHandler.js";
+import CustomErrorHandler from "../handlers/customErrorHandler.js";
+import bcrypt from "bcrypt";
 import Jwt from "jsonwebtoken";
 import {
   createUserRepo,
@@ -10,7 +10,7 @@ import {
   getOneUserRepo,
   updateUserRepo,
   getOneUserRepoByEmail,
-} from "../repo/userRepo";
+} from "../repo/userRepo.js";
 
 // Get all users
 const getAllUser = asyncErrorHandler(async (req, res, next) => {
@@ -31,6 +31,7 @@ const getOneUser = asyncErrorHandler(async (req, res, next) => {
 
 // Create a new user
 const addUser = asyncErrorHandler(async (req, res, next) => {
+  console.log("addUser");
   bcrypt.hash(req.body.password, 10, async (err, hash) => {
     if (err) {
       return next(new CustomErrorHandler("Password could not be hashed", 500));

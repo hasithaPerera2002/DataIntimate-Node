@@ -1,16 +1,19 @@
 import express from "express";
-import verifyToken from "../middleware/authMiddleware";
-const router = express.Router();
+import verifyToken from "../middleware/authMiddleware.js";
+const itemRouter = express.Router();
 import {
   createItem,
   updateItem,
   deleteItem,
   getAllItem,
   getOneItem,
-} from "../controllers/itemController";
+} from "../controllers/itemController.js";
 
-router.route("/").get(verifyToken, getAllItem).post(verifyToken, createItem);
-router
+itemRouter
+  .route("/")
+  .get(verifyToken, getAllItem)
+  .post(verifyToken, createItem);
+itemRouter
   .route("/:id")
   .get(verifyToken, getOneItem)
   .put(verifyToken, updateItem)

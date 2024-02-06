@@ -1,21 +1,21 @@
 import express from "express";
 import env from "dotenv";
-import userRouter from "./routes/userRouter";
-import itemRouter from "./routes/itemRouter";
-import globalErrorHandler from "./handlers/globalErrorHandler";
+import userRouter from "./routes/userRouter.js";
+import itemRouter from "./routes/itemRouter.js";
+import globalErrorHandler from "./handlers/globalErrorHandler.js";
 
 env.config();
 
 const app = express();
 
-app.use(express.json());
+app.listen(3000, () => {
+  console.log("Server is running on port 3000");
+});
 
-app.use(globalErrorHandler); //`globalErrorHandler` is a middleware that handles all errors
+// app.use(express.json());
+// app.use(globalErrorHandler); //`globalErrorHandler` is a middleware that handles all errors
 app.use("/api/user", userRouter);
 app.use("/api/item", itemRouter);
-app.use((req, res, next) => {
-  res.status(404).json({ message: "Route not found" });
-});
 
 process.on("unhandledRejection", (err) => {
   console.log(err.name, err.message);
@@ -24,7 +24,6 @@ process.on("unhandledRejection", (err) => {
 });
 
 process.on("uncaughtException", (err) => {
-  //
   console.log(err.name, err.message);
   console.log("UNCAUGHT EXCEPTION! Shutting down...");
   process.exit(1);

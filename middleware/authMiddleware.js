@@ -1,5 +1,5 @@
 import jsonToken from "jsonwebtoken";
-import CustomErrorHandler from "../handlers/customErrorHandler";
+import CustomErrorHandler from "../handlers/customErrorHandler.js";
 
 function verifyToken(req, res, next) {
   const authHeader = req.headers["authorization"]; // Get the token from the header

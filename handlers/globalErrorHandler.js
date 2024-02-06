@@ -1,4 +1,4 @@
-import CustomErrorHandler from "./customErrorHandler";
+import CustomErrorHandler from "./customErrorHandler.js";
 
 const globalErrorHandler = (error, req, res, next) => {
   error.statusCode = error.statusCode || 500;
