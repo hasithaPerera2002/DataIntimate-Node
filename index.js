@@ -6,7 +6,7 @@ env.config();
 
 const app = express();
 
-mongoose.connect("mongodb://localhost:27017/dataIntimate", {}).then(() => {
+mongoose.connect(process.env.MONGO_URI, {}).then(() => {
   console.log("Connected to MongoDB");
   app.listen(process.env.PORT, () => {
     console.log(`Server is running on port ${process.env.PORT}`);
