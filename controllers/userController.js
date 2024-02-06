@@ -58,9 +58,15 @@ const login = asyncErrorHandler(async (req, res, next) => {
           );
         }
         if (result) {
-          Jwt.sign({ username: user.email }, process.env.SECRET_KEY, {
-            expiresIn: "1h",
-          });
+          let token = Jwt.sign(
+            { username: user.email },
+            process.env.SECRET_KEY,
+            {
+              expiresIn: "1h",
+            }
+          );
+          res.setHeader("Authorization", token);
+          res.status(200).json({ message: "Login successful" });
         } else {
           return next(new CustomErrorHandler("Password is incorrect", 401));
         }
