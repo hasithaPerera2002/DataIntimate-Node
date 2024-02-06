@@ -1,0 +1,15 @@
+CREATE DATABASE IF NOT EXISTS dataIn;
+USE dataIn;
+CREATE TABLE items (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    price DECIMAL(10, 2) NOT NULL CHECK (price >= 0),
+    description TEXT NOT NULL,
+    quantity INT NOT NULL CHECK (quantity >= 0)
+);
+CREATE TABLE users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL
+);
