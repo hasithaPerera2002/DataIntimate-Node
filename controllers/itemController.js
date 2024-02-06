@@ -2,6 +2,7 @@ import Item from "../models/itemModel.js";
 import asyncHandler from "../handlers/asyncErrorHandler.js";
 import CustomerError from "../handlers/customErrorHandler.js";
 
+// Get all items
 const getAllItem = asyncHandler(async (req, res, next) => {
   const { page, limit } = req.query;
   const items = await Item.find()
@@ -11,6 +12,7 @@ const getAllItem = asyncHandler(async (req, res, next) => {
   res.json(items);
 });
 
+// Get one item
 const getOneItem = asyncHandler(async (req, res, next) => {
   const item = await Item.findById(req.params.id);
   if (!item) {
@@ -21,11 +23,13 @@ const getOneItem = asyncHandler(async (req, res, next) => {
   res.json(item);
 });
 
+// Create a new item
 const createItem = asyncHandler(async (req, res, next) => {
   const item = await Item.create(req.body);
   res.status(201).json(item);
 });
 
+// Update a item
 const updateItem = asyncHandler(async (req, res, next) => {
   await Item.updateOne({ _id: req.params.id }, { $set: req.body }).then(
     (result) => {
@@ -34,6 +38,7 @@ const updateItem = asyncHandler(async (req, res, next) => {
   );
 });
 
+// Delete a item
 const deleteItem = asyncHandler(async (req, res, next) => {
   await Item.deleteOne({ _id: req.params.id }).then((result) => {
     res.status(200).json(result);

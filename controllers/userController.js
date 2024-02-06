@@ -4,11 +4,13 @@ import CustomErrorHandler from "../handlers/customErrorHandler";
 import bcrypt from "bcryptjs";
 import Jwt from "jsonwebtoken";
 
+// Get all users
 const getAllUser = asyncErrorHandler(async (req, res, next) => {
   const users = await User.find({}, { password: 0 });
   res.json(users);
 });
 
+// Get one user
 const getOneUser = asyncErrorHandler(async (req, res, next) => {
   const user = await User.findById(req.params.id, { password: 0 });
   if (!user) {
@@ -19,6 +21,7 @@ const getOneUser = asyncErrorHandler(async (req, res, next) => {
   res.json(user);
 });
 
+// Create a new user
 const createUser = asyncErrorHandler(async (req, res, next) => {
   bcrypt.hash(req.body.password, 10, async (err, hash) => {
     if (err) {
@@ -29,6 +32,7 @@ const createUser = asyncErrorHandler(async (req, res, next) => {
   });
 });
 
+// Update a user
 const updateUser = asyncErrorHandler(async (req, res, next) => {
   await User.updateOne({ _id: req.params.id }, { $set: req.body }).then(
     (result) => {
@@ -37,12 +41,14 @@ const updateUser = asyncErrorHandler(async (req, res, next) => {
   );
 });
 
+// Delete a user
 const deleteUser = asyncErrorHandler(async (req, res, next) => {
   await User.deleteOne({ _id: req.params.id }).then((result) => {
     res.status(200).json(result);
   });
 });
 
+// Login a user
 const login = asyncErrorHandler(async (req, res, next) => {
   var email = req.body.email;
   var password = req.body.password;
@@ -51,6 +57,7 @@ const login = asyncErrorHandler(async (req, res, next) => {
       if (!user) {
         return next(new CustomErrorHandler("User not found", 404));
       }
+      // Compare the password with the hashed password
       bcrypt.compare(password, user.password, (err, result) => {
         if (err) {
           return next(
@@ -65,6 +72,7 @@ const login = asyncErrorHandler(async (req, res, next) => {
               expiresIn: "1h",
             }
           );
+          // Set the token in the header
           res.setHeader("Authorization", token);
           res.status(200).json({ message: "Login successful" });
         } else {
@@ -75,4 +83,4 @@ const login = asyncErrorHandler(async (req, res, next) => {
   );
 });
 
-export { getAllUser, getOneUser, createUser, updateUser, deleteUser };
+export { getAllUser, getOneUser, createUser, updateUser, deleteUser, login };

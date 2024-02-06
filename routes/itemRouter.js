@@ -1,4 +1,5 @@
 import express from "express";
+import verifyToken from "../middleware/authMiddleware";
 const router = express.Router();
 import {
   createItem,
@@ -8,7 +9,11 @@ import {
   getOneItem,
 } from "../controllers/itemController";
 
-router.route("/").get(getAllItem).post(createItem);
-router.route("/:id").get(getOneItem).put(updateItem).delete(deleteItem);
+router.route("/").get(verifyToken, getAllItem).post(verifyToken, createItem);
+router
+  .route("/:id")
+  .get(verifyToken, getOneItem)
+  .put(verifyToken, updateItem)
+  .delete(verifyToken, deleteItem);
 
-export default router;
+export default itemRouter;

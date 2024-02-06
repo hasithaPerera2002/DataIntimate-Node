@@ -6,6 +6,7 @@ import {
   updateUser,
   deleteUser,
   getAllUser,
+  login,
   getOneUser,
 } from "../controllers/userController";
 
@@ -13,8 +14,8 @@ router.route("/").get(getAllUser).post(createUser);
 router
   .route("/:id")
   .get(getOneUser)
-  .put(verifyToken, updateUser)
+  .put(verifyToken, updateUser) //`verifyToken` is a middleware that checks if the user is authorized
   .delete(deleteUser);
 router.route("/login").post(login);
 
-export default router;
+export default userRouter;
